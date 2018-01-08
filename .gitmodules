@@ -1,0 +1,6 @@
+[submodule "engine"]
+	path = engine
+	url = git@github.com:moby/moby
+[submodule "cli"]
+	path = cli
+	url = git@github.com:docker/cli
