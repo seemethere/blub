@@ -10,11 +10,33 @@ MAKE_VARIABLES=VERSION="$(VERSION)" ENGINE_DIR="$(ENGINE_DIR)" CLI_DIR="$(CLI_DI
 all:
 	$(MAKE) -e -C $(PACKAGING_DIR) $(MAKE_VARIABLES) DOCKER_BUILD_PKGS=static-linux static
 
-%:
-	$(MAKE) -e -C $(PACKAGING_DIR) $(MAKE_VARIABLES) $@
+.PHONY: test
+test: test-unit test-integration
+
+.PHONY: test-unit
+test-unit: cli-test-unit engine-test-unit
+
+.PHONY: cli-test-unit
+cli-test-unit:
+	$(MAKE) -e -C $(CLI_DIR) -f docker.Makefile test-unit
+
+.PHONY: engine-test-unit
+engine-test-unit:
+	$(MAKE) -e -C $(ENGINE_DIR) VERSION="$(VERSION)" test-unit
 
 $(CLI_DIR)/build/docker:
-	make -C $(CLI_DIR) -f docker.Makefile binary
+	make -C $(CLI_DIR) -f VERSION="$(VERSION)" docker.Makefile binary
 
-test-integration: $(CLI_DIR)/build/docker
+.PHONY: test-integration
+test-integration: engine-test-integration cli-test-integration
+
+.PHONY: engine-test-integration
+engine-test-integration: $(CLI_DIR)/build/docker
 	make -e -C $(ENGINE_DIR) VERSION="$(VERSION)" TEST_CLIENT_BINARY="$<" test-integration
+
+.PHONY: cli-test-integration
+cli-test-integration:
+	make -e -C $(CLI_DIR) VERSION="$(VERSION)" test-e2e
+
+packaging-%:
+	$(MAKE) -e -C $(PACKAGING_DIR) $(MAKE_VARIABLES) $(subst packaging-,,$@)
