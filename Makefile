@@ -7,12 +7,12 @@ PACKAGING_DIR:=$(CURDIR)/packaging
 
 MAKE_VARIABLES=VERSION="$(VERSION)" ENGINE_DIR="$(ENGINE_DIR)" CLI_DIR="$(CLI_DIR)"
 
+all:
+	$(MAKE) -e -C $(PACKAGING_DIR) $(MAKE_VARIABLES) DOCKER_BUILD_PKGS=static-linux static
+
 .PHONY: help
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
-
-all:
-	$(MAKE) -e -C $(PACKAGING_DIR) $(MAKE_VARIABLES) DOCKER_BUILD_PKGS=static-linux static
 
 .PHONY: clean
 clean:
