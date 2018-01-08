@@ -10,6 +10,12 @@ MAKE_VARIABLES=VERSION="$(VERSION)" ENGINE_DIR="$(ENGINE_DIR)" CLI_DIR="$(CLI_DI
 all:
 	$(MAKE) -e -C $(PACKAGING_DIR) $(MAKE_VARIABLES) DOCKER_BUILD_PKGS=static-linux static
 
+.PHONY: clean
+clean:
+	$(MAKE) -e -C $(PACKAGING_DIR) clean
+	$(MAKE) -e -C $(ENGINE_DIR) clean
+	$(MAKE) -e -C $(CLI_DIR) -f docker.Makefile clean
+
 .PHONY: test
 test: test-unit test-integration
 
